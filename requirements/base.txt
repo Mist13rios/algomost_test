@@ -1,0 +1,11 @@
+Django
+psycopg2-binary
+Pillow
+# gunicorn
+# django-grappelli
+# requests
+# django-webpack-loader
+# django-libsass
+# libsass
+# django-compressor
+# django-compressor-autoprefixer

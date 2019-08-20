@@ -1,0 +1,26 @@
+{% load static %}
+
+{% block content %}
+  <form action='{% url "login" %}' method='post'>
+    {% csrf_token %}
+    <div class="form-group">
+      <label class="control-label">Имя пользователя</label>
+      <input type="text" class="form-control" name='username' placeholder="Имя пользователя">
+    </div>
+    <div class="form-group">
+      <label for="id_password" class="control-label">Пароль</label>
+      <input type="password" class="form-control" name='password' placeholder="Пароль">
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-default">
+        <i class='glyphicon glyphicon-log-in'></i>
+        Войти
+      </button>
+    </div>
+  </form>
+  {% if request.method == 'POST' %}
+  <div class="alert alert-danger" role="alert">
+    Не удалось войти
+  </div>
+  {% endif %}
+{% endblock %}

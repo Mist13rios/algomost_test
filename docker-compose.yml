@@ -1,0 +1,72 @@
+version: '3'
+
+services:
+  db_algomost:
+    build: ./services/db
+    container_name: algomost_db
+    restart: "no"
+    env_file: .env
+    volumes:
+      - psql_data:/var/lib/postgresql/data
+    expose:
+      - "5432"
+    ports:
+      - 5432:5432  # for debugging
+    networks:
+      - backend
+
+  nginx_algomost:
+    build: ./services/nginx
+    container_name: algomost_nginx
+    restart: "no"
+    ports:
+      - 80:80
+      - 8090:8090
+    volumes:
+      - ./static:/var/www/src/static
+#      - ./media:/var/www/src/media
+    links:
+      - app_algomost
+    depends_on:
+      - app_algomost
+    networks:
+      - frontend
+      - backend
+
+  app_algomost:
+    build:
+      context: ./
+      dockerfile: services/app/Dockerfile
+      args:
+        - BUILD_ENV=dev
+        - REQUIREMENTS=base
+    image: algomost_app:latest
+    container_name: algomost
+    command: ${SYSTEM_UP_COMMAND}
+    restart: "no"
+    env_file: .env
+    volumes:
+      - .:/var/www/src
+      # mount all code except a few folders:
+      - ./static:/var/www/src/static
+#      - ./media:/var/www/src/media
+      - ./services/app/docker-entrypoint.sh:/docker-entrypoint.sh
+    depends_on:
+      - db_algomost
+    links:
+      - db_algomost
+    ports:
+      - 8000:8000
+      - 3000:3000
+    networks:
+      - frontend
+      - backend
+
+volumes:
+  psql_data:
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
